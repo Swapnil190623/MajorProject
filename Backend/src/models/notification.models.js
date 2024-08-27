@@ -4,7 +4,8 @@ const notificationSchema = new mongoose.Schema(
     {
     userId: { 
         type: String, // Firebase uid of the user
-        required: true 
+        required: true ,
+        ref:"User"
     },
 
     title: { 
