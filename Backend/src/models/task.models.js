@@ -30,10 +30,10 @@ const taskSchema = new mongoose.Schema(
     },
 
     assignedTo: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId, // ref to users
       required: true,
       ref: "User",
-    }, // Firebase uid of the assigned user
+    },
   },
   { timestamps: true }
 );

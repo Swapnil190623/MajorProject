@@ -14,20 +14,20 @@ const projectSchema = new mongoose.Schema(
     },
 
     owner: {
-      type: String, // Firebase uid of the project owner
+      type: mongoose.Schema.Types.ObjectId, //id of the project owner
       required: true,
       ref: "User", // Referencing the User model
     },
 
     assignedBy: {
-      type: String, // Firebase uid of the person who assigned the project
+      type: mongoose.Schema.Types.ObjectId, //id of the person who assigned the project
       ref: "User",
       required: true,
     },
 
     teamMembers: [
       {
-        type: String, // Firebase UIDs of team members
+        type: mongoose.Schema.Types.ObjectId, // IDs of team members
         ref: "User",
       },
     ], // Array of Firebase uids for team members

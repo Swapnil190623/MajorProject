@@ -2,10 +2,10 @@ import mongoose from "mongoose";
 
 const hoursWorkedSchema = new mongoose.Schema({
   userId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "User",
-  }, // Firebase uid of the user
+  }, // id of the user
 
   taskId: {
     type: mongoose.Schema.Types.ObjectId,

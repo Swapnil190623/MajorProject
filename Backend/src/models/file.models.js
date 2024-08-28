@@ -34,7 +34,7 @@ const fileSchema = new mongoose.Schema(
     }, // Reference to Project ID
 
     uploadedBy: {
-      type: String, // Firebase uid of the uploader
+      type: mongoose.Schema.Types.ObjectId, // id of the uploader
       ref: "User",
       required: true,
     },

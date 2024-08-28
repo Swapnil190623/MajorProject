@@ -9,10 +9,10 @@ const invoiceSchema = new mongoose.Schema(
     }, // Reference to Project ID
 
     clientId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
-    }, // Firebase uid of the client
+    }, // id of the client
 
     date: {
       type: Date,
