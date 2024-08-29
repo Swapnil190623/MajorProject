@@ -70,4 +70,22 @@ const projectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
+projectSchema.pre('save', async function(next) {
+  const assignerExists = await User.exists({ _id: this.assignedBy });
+  if (!assignerExists) {
+    throw new ApiError(400, 'Assigned user does not exist.');
+  }
+
+  for (let memberId of this.teamMembers) {
+    const memberExists = await User.exists({ _id: memberId });
+    if (!memberExists) {
+      throw new ApiError(400, `User with ID ${memberId} does not exist.`);
+    }
+  }
+
+  next();
+});
+
+
 export const Project = mongoose.model("Project", projectSchema);
