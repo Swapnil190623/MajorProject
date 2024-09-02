@@ -2,8 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { Project } from "../models/project.models.js"
+import { Task } from "../models/task.models.js"
 import { Invoice } from "../models/invoice.models.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
@@ -154,8 +154,36 @@ const assignTeamMembers = asyncHandler(async (req, res) => {
 });
 
 
-// const updateProjectProgress = asyncHandler(async (req, res) => {
-// }); // done this in task 
+const updateProjectProgress = asyncHandler(async (req, res) => {
+    // Find the associated project and update progress
+
+  const { projectId } = req.body;
+
+  const project = await Project.findById(projectId);
+
+  if (!project) {
+    throw new ApiError(404, 'Project not found');
+  }
+
+ //   const totalTasks = await Task.countDocuments({ projectId: project._id });
+  const totalTasks = project.noOfTasks;
+  const completedTasks = await Task.countDocuments({ projectId : projectId, status: 'completed' });
+
+  const progress = (completedTasks / totalTasks) * 100; // (5 / 10) * 100 = 50%
+      
+  project.progress = progress;
+
+  if (progress === 100) {
+    project.status = 'completed';
+  } 
+  else if (progress > 0) {
+    project.status = 'in-progress';
+  }
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, progress, "Project progress updated successfully"))
+});
 
 
 const generateInvoice = asyncHandler(async (req, res) => {
