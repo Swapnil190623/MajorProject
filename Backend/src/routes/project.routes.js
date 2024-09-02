@@ -8,8 +8,8 @@ import {
     assignTeamMembers,
     updateProjectProgress,
     generateInvoice,
-} from '../controllers/project.controllers'
-import {verifyJWT} from "../middlewares/auth.middleware.js"
+} from '../controllers/project.controllers.js'
+import {verifyJWT} from "../middlewares/auth.middlewares.js"
 
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file

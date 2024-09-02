@@ -8,8 +8,10 @@ import {
     getCurrentUser, 
     updateUserAvatar,  
     updateAccountDetails
-} from '../controllers/authController.js';
-import { verifyJWT } from '../middlewares/authMiddleware.js';
+} from '../controllers/user.controllers.js';
+import { verifyJWT } from '../middlewares/auth.middlewares.js';
+
+import {upload} from '../middlewares/multer.middlewares.js'
 
 const router = Router();
 

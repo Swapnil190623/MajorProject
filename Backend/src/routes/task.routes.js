@@ -8,8 +8,8 @@ import {
     assignTask,
     deleteTask, 
     updateTaskStatus,
-} from '../controllers/task.controllers'
-import {verifyJWT} from "../middlewares/auth.middleware.js"
+} from '../controllers/task.controllers.js'
+import {verifyJWT} from "../middlewares/auth.middlewares.js"
 
 
 const router = Router();
