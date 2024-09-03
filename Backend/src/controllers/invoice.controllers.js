@@ -6,27 +6,111 @@ import { Invoice } from "../models/invoice.models.js"
 
 
 const createInvoice = asyncHandler(async (req, res) => {
+    const { projectId, clientId, status, date, totalAmount } = req.body;
 
+     // Validate required fields
+     if (!(projectId || clientId || status || totalAmount || date)) {
+        throw new ApiError(400, "All fields (projectId, clientId, date, totalAmount) are required");
+    }
+
+    const newInvoice = await Invoice.create({
+        projectId,
+        clientId,
+        status,
+        date : date ? new Date(date) : null,
+        totalAmount,
+    });
+
+    return res
+    .status(201)
+    .json(new ApiResponse(201, "Invoice created successfully", newInvoice));
 });
+
 
 const getInvoiceByProject = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
 
+    const invoices = await Invoice.find({ projectId });
+
+    if (!invoices) {
+        throw new ApiError(404, "No invoices found for this project");
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "Invoices retrieved successfully", invoices));
 });
+
 
 const getInvoiceById = asyncHandler(async (req, res) => {
+    const { invoiceId } = req.params;
 
+    const invoice = await Invoice.findById(invoiceId);
+
+    if (!invoice) {
+        throw new ApiError(404, "Invoice not found");
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "Invoice retrieved successfully", invoice));
 });
+
 
 const updateInvoice = asyncHandler(async (req, res) => {
+    const { invoiceId } = req.params;
+    const { date, totalAmount, status } = req.body;
 
+    const updatedInvoice = await Invoice.findByIdAndUpdate(
+        invoiceId,
+        { date, totalAmount, status },
+        { new: true }
+    );
+
+    if (!updatedInvoice) {
+        throw new ApiError(404, "Invoice not found");
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "Invoice updated successfully", updatedInvoice));
 });
+
 
 const deleteInvoice = asyncHandler(async (req, res) => {
+    const { invoiceId } = req.params;
 
+    const deletedInvoice = await Invoice.findByIdAndDelete(invoiceId);
+
+    if (!deletedInvoice) {
+        throw new ApiError(404, "Invoice not found");
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "Invoice deleted successfully", deletedInvoice));
 });
 
-const markInvoiceAsPaid = asyncHandler(async (req, res) => {
 
+const markInvoiceAsPaid = asyncHandler(async (req, res) => {
+    const { invoiceId } = req.params;
+
+    const invoice = await Invoice.findById(invoiceId);
+
+    if (!invoice) {
+        throw new ApiError(404, "Invoice not found");
+    }
+
+    if (invoice.status === "paid") {
+        throw new ApiError(400, "Invoice is already marked as paid");
+    }
+
+    invoice.status = "paid";
+    await invoice.save();
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, "Invoice marked as paid", invoice));
 });
 
 
