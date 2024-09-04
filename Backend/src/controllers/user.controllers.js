@@ -67,6 +67,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (!avatar) {
     throw new ApiError(400, "Avatar file is required");
   }
+  // we are getting error in here buddy .
 
   const user = await User.create({
     fullName,
@@ -119,19 +120,16 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User does not exist");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  const isPasswordValid = await user.isPasswordCorrect(password)
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
-    user._id
-  );
+  
+  const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
 
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
+  const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
   const options = {
     httpOnly: true,
@@ -255,9 +253,19 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullName, email } = req.body;
 
-  if (!fullName || !email) {
+  // if (!fullName || !email) {
+  //   throw new ApiError(400, "All fields are required");
+  // }
+  
+  if (
+    [fullName,email].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
     throw new ApiError(400, "All fields are required");
   }
+
+
 
   const user = await User.findByIdAndUpdate(
     req.user?._id,
