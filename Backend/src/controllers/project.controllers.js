@@ -5,6 +5,7 @@ import { Project } from "../models/project.models.js"
 import { Task } from "../models/task.models.js"
 import { Invoice } from "../models/invoice.models.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { mongoose } from "mongoose";
 
 
 const createProject = asyncHandler(async (req, res) => {
@@ -24,6 +25,11 @@ const createProject = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Please provide all required fields.');
     }
 
+     // Validate deadline date
+     if (!moment(deadline, moment.ISO_8601, true).isValid()) {
+        throw new ApiError(400, 'Invalid date format for deadline.');
+    }
+
     // Check if the project name already exists
     const existingProject = await Project.findOne({ name });
     if (existingProject) {
@@ -37,6 +43,7 @@ const createProject = asyncHandler(async (req, res) => {
         owner : req.user._id,
         assignedBy,
         teamMembers,
+        deadline:new Date(deadline),
         budget,
         status: status || 'pending',
         progress: progress || 0,
@@ -87,6 +94,11 @@ const getProjectById = asyncHandler(async (req, res) => {
 const updateProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
     const { description, projectType, budget, deadline } = req.body;
+
+      // Check if the deadline is in the past
+      if (deadline && new Date(deadline) <= new Date()) {
+        throw new ApiError(400, 'The deadline must be a future date.');
+    }
 
     const project = await Project.findByIdAndUpdate(
         projectId,
@@ -157,7 +169,7 @@ const assignTeamMembers = asyncHandler(async (req, res) => {
 const updateProjectProgress = asyncHandler(async (req, res) => {
     // Find the associated project and update progress
 
-  const { projectId } = req.body;
+  const { projectId } = req.params;
 
   const project = await Project.findById(projectId);
 
@@ -190,6 +202,11 @@ const generateInvoice = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
     const { status } = req.body
 
+     // Validation for required fields
+    //  if (!clientId) {
+    //     throw new ApiError(400, 'clientId is required.');
+    // }
+
     const project = await Project.findById(projectId);
     if (!project) {
         throw new ApiError(404, 'Project not found');
@@ -198,7 +215,8 @@ const generateInvoice = asyncHandler(async (req, res) => {
     // Placeholder logic for generating an invoice
     const invoice = await Invoice.create({
         projectId : projectId,
-        client : project.assignedBy,
+        clientId:project.assignedBy,
+        // clientId :  new mongoose.Types.ObjectId(project.assignedBy),//chage made
         totalAmount: project.budget,
         date: new Date(),
         status : status || "unpaid"

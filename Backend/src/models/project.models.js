@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { User } from "./user.models.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const projectSchema = new mongoose.Schema(
   {
@@ -23,7 +25,7 @@ const projectSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId, //id of the person who assigned the project
       ref: "User",
       required: true,
-    },
+    },//client
 
     teamMembers: [
       {
@@ -82,6 +84,11 @@ projectSchema.pre('save', async function(next) {
     if (!memberExists) {
       throw new ApiError(400, `User with ID ${memberId} does not exist.`);
     }
+  }
+
+    // Ensure the deadline is in the future
+    if (new Date(this.deadline) <= new Date()) {
+      throw new ApiError(400, 'The deadline must be a future date.');
   }
 
   next();

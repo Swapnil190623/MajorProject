@@ -16,20 +16,21 @@ router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
 
 router.route("/")
-.get(getAllProjects)
-.post(createProject);
+.get(getAllProjects) // testing-Done
+.post(createProject); // testing-DOne
 
 router.route("/:projectId")
-.get(getProjectById)
-.patch(updateProject)
+.get(getProjectById) // testing-Done
+.patch(updateProject)//testing-Done
 .delete(deleteProject)
 
 router.route("/assign/team-members/:projectId")
-.patch(assignTeamMembers)
+.patch(assignTeamMembers) // route is working
 
 router.route("/update/project-progress/:projectId")
-.patch(updateProjectProgress)
+.patch(updateProjectProgress) // route is working
 
-router.route("/generate/invoice/:projectId").post(generateInvoice)
+router.route("/generate/invoice/:projectId")
+.post(generateInvoice) // testing-Done
 
 export default router
