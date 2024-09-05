@@ -15,11 +15,11 @@ const taskSchema = new mongoose.Schema(
 
     description: { type: String },
 
-    dueDate: { type: Date, required: true },
+    dueDate: { type: Date },
 
-    taskstatus: {
+    taskStatus: {
       type: String,
-      enum: ["pending", "completed"],
+      enum: ["pending", "in-progress", "completed"],
       default: "pending",
     },
 
@@ -31,7 +31,7 @@ const taskSchema = new mongoose.Schema(
 
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId, // ref to users
-      required: true,
+      // required: true,
       ref: "User",
     },
   },

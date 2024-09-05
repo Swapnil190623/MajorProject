@@ -2,10 +2,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { Task } from "../models/task.models.js"
-import { Project } from "../models/project.models.js"
-import { User } from "../models/user.models.js"
-
+import { Task } from "../models/task.models.js";
+import { Project } from "../models/project.models.js";
+import { User } from "../models/user.models.js";
 
 const createTask = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -17,6 +16,7 @@ const createTask = asyncHandler(async (req, res) => {
 
   // Validate that the project exists
   const project = await Project.findById(projectId);
+
   if (!project) {
     throw new ApiError(404, "Project not found.");
   }
@@ -30,37 +30,35 @@ const createTask = asyncHandler(async (req, res) => {
   }
 
   const task = await Task.create({
-    projectId : projectId,
+    projectId: projectId,
     name,
     description,
-    dueDate : dueDate ? new Date(dueDate) : null, // Ensure dueDate is a valid date
-    taskStatus : "pending",
-    priority : priority || "medium",
-    assignedTo : assignedTo || null
+    dueDate: dueDate ? new Date(dueDate) : null, // Ensure dueDate is a valid date
+    taskStatus: "pending",
+    priority: priority || "medium",
+    assignedTo: assignedTo || null,
   });
 
-  if(!task) {
-    throw new ApiError(400, "Failed to create task")
+  if (!task) {
+    throw new ApiError(400, "Failed to create task");
   }
 
   return res
-  .status(200)
-  .json(new ApiResponse(200, task, "Task created successfully"))
+    .status(200)
+    .json(new ApiResponse(200, task, "Task created successfully"));
 });
-
 
 const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await Task.find({ "assignedTo" : req.user._id})
+  const tasks = await Task.find({ assignedTo: req.user._id });
 
-  if(tasks.length == 0) {
-    throw new ApiError(404, "No Tasks found")
+  if (tasks.length == 0) {
+    throw new ApiError(404, "No Tasks found");
   }
 
   return res
-  .status(200)
-  .json(new ApiResponse(200, tasks, "Tasks retrieved successfully"))
-});
-
+    .status(200)
+    .json(new ApiResponse(200, tasks, "Tasks retrieved successfully"));
+}); // taks that has been assigned to you by someone else .
 
 const getTasksByProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
@@ -74,23 +72,21 @@ const getTasksByProject = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, tasks, "Tasks retrieved successfully."));
-});
-
+}); // all tasks of the project.
 
 const getTaskById = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
 
-  const task = await Task.findById(taskId)
+  const task = await Task.findById(taskId);
 
-  if(!task) {
-    throw new ApiError(400, "No task found")
+  if (!task) {
+    throw new ApiError(400, "No task found");
   }
 
   return res
-  .status(200)
-  .json(new ApiResponse(200, task, "Task retrieved successfully"))
-});
-
+    .status(200)
+    .json(new ApiResponse(200, task, "Task retrieved successfully"));
+}); //gets a single task
 
 // only freelancer can update task
 const updateTask = asyncHandler(async (req, res) => {
@@ -108,26 +104,25 @@ const updateTask = asyncHandler(async (req, res) => {
   const task = await Task.findByIdAndUpdate(
     taskId,
     {
-      $set : {
+      $set: {
         name,
         description,
-        dueDate: dueDate ? new Date(dueDate) : null,  
+        dueDate: dueDate ? new Date(dueDate) : null,
         priority,
-        assignedTo
-      }
+        assignedTo,
+      },
     },
-    { new : true }
+    { new: true }
   );
 
-  if(!task) {
-    throw new ApiError(400, "Task not found")
+  if (!task) {
+    throw new ApiError(400, "Task not found");
   }
 
   return res
-  .status(200)
-  .json(new ApiResponse(200, task, "Task updated successfully"))
+    .status(200)
+    .json(new ApiResponse(200, task, "Task updated successfully"));
 });
-
 
 const assignTask = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
@@ -136,17 +131,16 @@ const assignTask = asyncHandler(async (req, res) => {
   const task = await Task.findById(taskId);
 
   if (!task) {
-    throw new ApiError(404, 'Task not found');
+    throw new ApiError(404, "Task not found");
   }
 
   task.assignedTo = assignedTo;
   await task.save();
 
   return res
-  .status(200)
-  .json(new ApiResponse(200, task, 'Task assigned successfully'));
+    .status(200)
+    .json(new ApiResponse(200, task, "Task assigned successfully"));
 });
-
 
 const deleteTask = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
@@ -158,9 +152,18 @@ const deleteTask = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Task not found.");
   }
 
-  // Check if the current user is the one who created the task
-  if (task.assignedTo.toString() !== req.user._id.toString()) {
-    throw new ApiError(403, "You do not have permission to delete this task.");
+  // Check if the task has been assigned to anyone
+  if (task.assignedTo) {
+    // Check if the current user is the one who created the task
+    if (task.assignedTo.toString() !== req.user._id.toString()) {
+      throw new ApiError(
+        403,
+        "You do not have permission to delete this task."
+      );
+    }
+  } else {
+    // If the task is not assigned to anyone, allow the delete operation
+    console.warn("Task is not assigned to anyone.");
   }
 
   // Proceed to delete the task if the user is authorized
@@ -169,8 +172,7 @@ const deleteTask = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, task, "Task deleted successfully."));
-});
-
+}); // delete a single task
 
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
@@ -182,18 +184,18 @@ const updateTaskStatus = asyncHandler(async (req, res) => {
   }
 
   const task = await Task.findById(taskId);
+
   if (!task) {
     throw new ApiError(404, "Task not found.");
   }
 
-  task.status = status;
+  task.taskStatus = status;
   await task.save();
 
   return res
     .status(200)
     .json(new ApiResponse(200, task, "Task status updated successfully."));
 });
-
 
 export {
   createTask,
@@ -203,6 +205,5 @@ export {
   updateTask,
   assignTask,
   deleteTask,
-  assignTask, 
   updateTaskStatus,
-}
+};
