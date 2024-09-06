@@ -198,37 +198,37 @@ const updateProjectProgress = asyncHandler(async (req, res) => {
 });
 
 
-const generateInvoice = asyncHandler(async (req, res) => {
-    const { projectId } = req.params;
-    const { status } = req.body
+// const generateInvoice = asyncHandler(async (req, res) => {
+//     const { projectId } = req.params;
+//     const { status } = req.body
 
-     // Validation for required fields
-    //  if (!clientId) {
-    //     throw new ApiError(400, 'clientId is required.');
-    // }
+//      // Validation for required fields
+//     //  if (!clientId) {
+//     //     throw new ApiError(400, 'clientId is required.');
+//     // }
 
-    const project = await Project.findById(projectId);
-    if (!project) {
-        throw new ApiError(404, 'Project not found');
-    }
+//     const project = await Project.findById(projectId);
+//     if (!project) {
+//         throw new ApiError(404, 'Project not found');
+//     }
 
-    // Placeholder logic for generating an invoice
-    const invoice = await Invoice.create({
-        projectId : projectId,
-        clientId:project.assignedBy,
-        // clientId :  new mongoose.Types.ObjectId(project.assignedBy),//chage made
-        totalAmount: project.budget,
-        date: new Date(),
-        status : status || "unpaid"
-    });
+//     // Placeholder logic for generating an invoice
+//     const invoice = await Invoice.create({
+//         projectId : projectId,
+//         clientId:project.assignedBy,
+//         // clientId :  new mongoose.Types.ObjectId(project.assignedBy),//chage made
+//         totalAmount: project.budget,
+//         date: new Date(),
+//         status : status || "unpaid"
+//     });
 
-    project.invoice = invoice._id;
-    await project.save();
+//     project.invoice = invoice._id;
+//     await project.save();
 
-    return res
-    .status(201)
-    .json(new ApiResponse(201, invoice, 'Invoice generated successfully.'));
-});
+//     return res
+//     .status(201)
+//     .json(new ApiResponse(201, invoice, 'Invoice generated successfully.'));
+// }); // replace this code in invoice controller.
 
 
 export {
@@ -239,5 +239,5 @@ export {
     deleteProject,
     assignTeamMembers,
     updateProjectProgress,
-    generateInvoice,
+    
 }

@@ -7,7 +7,7 @@ import {
     deleteProject,
     assignTeamMembers,
     updateProjectProgress,
-    generateInvoice,
+    
 } from '../controllers/project.controllers.js'
 import {verifyJWT} from "../middlewares/auth.middlewares.js"
 
@@ -30,7 +30,7 @@ router.route("/assign/team-members/:projectId")
 router.route("/update/project-progress/:projectId")
 .patch(updateProjectProgress) // route is working
 
-router.route("/generate/invoice/:projectId")
-.post(generateInvoice) // testing-Done
+// router.route("/generate/invoice/:projectId")
+// .post(generateInvoice) // testing-Done
 
 export default router

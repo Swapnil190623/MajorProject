@@ -5,27 +5,37 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Invoice } from "../models/invoice.models.js"
 
 
-const createInvoice = asyncHandler(async (req, res) => {
-    const { projectId, clientId, status, date, totalAmount } = req.body;
+const generateInvoice = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+    const { status } = req.body
 
-     // Validate required fields
-     if (!(projectId || clientId || status || totalAmount || date)) {
-        throw new ApiError(400, "All fields (projectId, clientId, date, totalAmount) are required");
+     // Validation for required fields
+    //  if (!clientId) {
+    //     throw new ApiError(400, 'clientId is required.');
+    // }
+
+    const project = await Project.findById(projectId);
+    if (!project) {
+        throw new ApiError(404, 'Project not found');
     }
 
-    const newInvoice = await Invoice.create({
-        projectId,
-        clientId,
-        status,
-        date : date ? new Date(date) : null,
-        totalAmount,
+    // Placeholder logic for generating an invoice
+    const invoice = await Invoice.create({
+        projectId : projectId,
+        clientId:project.assignedBy,
+        // clientId :  new mongoose.Types.ObjectId(project.assignedBy),//chage made
+        totalAmount: project.budget,
+        date: new Date(),
+        status : status || "unpaid"
     });
+
+    project.invoice = invoice._id;
+    await project.save();
 
     return res
     .status(201)
-    .json(new ApiResponse(201, "Invoice created successfully", newInvoice));
+    .json(new ApiResponse(201, invoice, 'Invoice generated successfully.'));
 });
-
 
 const getInvoiceByProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
@@ -115,7 +125,7 @@ const markInvoiceAsPaid = asyncHandler(async (req, res) => {
 
 
 export {
-    createInvoice,
+    generateInvoice,
     getInvoiceById,
     getInvoiceByProject,
     updateInvoice,
