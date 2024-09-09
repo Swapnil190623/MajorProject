@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Invoice } from "../models/invoice.models.js"
+import {Project} from '../models/project.models.js'
 
 
 const generateInvoice = asyncHandler(async (req, res) => {

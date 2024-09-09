@@ -20,11 +20,16 @@ app.use(cookieParser())
 import userRoutes from './routes/user.routes.js';
 import projectRoutes from './routes/project.routes.js'
 import taskRoutes from './routes/task.routes.js'
+import fileRoutes from './routes/file.routes.js'
+import invoiceRoutes from './routes/invoice.routes.js'
+
 
 // routes declaration
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/project', projectRoutes);
 app.use('/api/v1/task',taskRoutes );
+app.use('/api/v1/file',fileRoutes );
+app.use('api/v1/invoice',invoiceRoutes)
 
 
 export { app }
