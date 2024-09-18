@@ -27,9 +27,9 @@ import invoiceRoutes from './routes/invoice.routes.js'
 // routes declaration
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/project', projectRoutes);
-app.use('/api/v1/task',taskRoutes );
-app.use('/api/v1/file',fileRoutes );
-app.use('api/v1/invoice',invoiceRoutes)
+app.use('/api/v1/task', taskRoutes);
+app.use('/api/v1/file', fileRoutes);
+app.use('/api/v1/invoice', invoiceRoutes);
 
 
 export { app }

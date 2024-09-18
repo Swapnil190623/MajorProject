@@ -13,16 +13,16 @@ import { verifyJWT } from "../middlewares/auth.middlewares.js";
 const router = Router();
 router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
 
-router.post("/generate-invoice/:projectId", generateInvoice);
+router.post("/generate-invoice/:projectId", generateInvoice); // testing-Done
 
-router
-  .route("/:invoiceId")
-  .get(getInvoiceById)
-  .patch(updateInvoice)
-  .delete(deleteInvoice);
+router.route("/:invoiceId")
+.get(getInvoiceById) // testing-Done
+.patch(updateInvoice) // testing-Done
+.delete(deleteInvoice); // testing-Done
 
-router.route("/:projectId").get(getInvoiceByProject);
+router.route("/projects/:projectId")
+.get(getInvoiceByProject); // testing-Done
 
-router.route("/mark-as-paid/:invoiceId").patch(markInvoiceAsPaid);
+router.route("/mark-as-paid/:invoiceId").patch(markInvoiceAsPaid); // testing-Done
 
 export default router;
