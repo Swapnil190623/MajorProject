@@ -23,20 +23,21 @@ const generateInvoice = asyncHandler(async (req, res) => {
     // Placeholder logic for generating an invoice
     const invoice = await Invoice.create({
         projectId : projectId,
-        clientId:project.assignedBy,
-        // clientId :  new mongoose.Types.ObjectId(project.assignedBy),//chage made
-        totalAmount: project.budget,
-        date: new Date(),
+        clientId : project.assignedBy,
+        // clientId : new mongoose.Types.ObjectId(project.assignedBy),//chage made
+        totalAmount : project.budget,
+        date : new Date(),
         status : status || "unpaid"
     });
 
     project.invoice = invoice._id;
-    await project.save();
+    // await project.save();
 
     return res
     .status(201)
     .json(new ApiResponse(201, invoice, 'Invoice generated successfully.'));
 });
+
 
 const getInvoiceByProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
@@ -49,7 +50,7 @@ const getInvoiceByProject = asyncHandler(async (req, res) => {
 
     return res
     .status(200)
-    .json(new ApiResponse(200, "Invoices retrieved successfully", invoices));
+    .json(new ApiResponse(200, invoices, "Invoices retrieved successfully"));
 });
 
 
@@ -70,11 +71,11 @@ const getInvoiceById = asyncHandler(async (req, res) => {
 
 const updateInvoice = asyncHandler(async (req, res) => {
     const { invoiceId } = req.params;
-    const { date, totalAmount, status } = req.body;
+    const { totalAmount, status } = req.body;
 
     const updatedInvoice = await Invoice.findByIdAndUpdate(
         invoiceId,
-        { date, totalAmount, status },
+        { totalAmount, status },
         { new: true }
     );
 
@@ -117,7 +118,7 @@ const markInvoiceAsPaid = asyncHandler(async (req, res) => {
     }
 
     invoice.status = "paid";
-    await invoice.save();
+    // await invoice.save();
 
     return res
     .status(200)
