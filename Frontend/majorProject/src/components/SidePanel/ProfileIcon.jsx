@@ -15,7 +15,7 @@ export default function ProfileIcon() {
                 <p className="text-[16px] font-semibold">{user.fullName}</p>
                 <p className="text-[13px] text-gray-400">{user.email}</p>
             </div>
-            <Avatar className="" alt="Remy Sharp" src={user.avatar} />
+            <Avatar className="" alt={user.username} src={user.avatar} />
         </div>
     </div>
   )
