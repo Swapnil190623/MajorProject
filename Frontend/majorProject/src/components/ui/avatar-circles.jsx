@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const AvatarCircles = ({
   numPeople,
   className,
-  avatarUrls = ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB-vrLTrLKobMXY_KyxVD9jlYoiAIOMSP80A&s", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB-vrLTrLKobMXY_KyxVD9jlYoiAIOMSP80A&s", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRB-vrLTrLKobMXY_KyxVD9jlYoiAIOMSP80A&s"]
+  avatarUrls = []
 }) => {
   return (
     (<div className={cn("z-10 flex -space-x-4 rtl:space-x-reverse", className)}>

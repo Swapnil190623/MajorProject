@@ -15,6 +15,8 @@ import Select from '@mui/material/Select';
 import ProjectCard from "@/components/Projects/ProjectCard";
 import { NavLink, useNavigate } from "react-router-dom";
 import api from "@/api/api";
+import toLowerCaseString from "@/lib/toLowerCaseString";
+import NotfoundAnimation from "@/components/NotFoundAnimation";
 
 
 export default function AllProject() {
@@ -25,7 +27,7 @@ export default function AllProject() {
     const projects = useSelector((state) => state.projects.projects); // get projects from Redux
     const [filter, setFilter] = useState('');
     // const [projects, setProjects] = useState([]);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const handleChange = (event) => {
         setFilter(event.target.value);
@@ -53,18 +55,26 @@ export default function AllProject() {
     // }, [])
 
     const filteredProjects = filter
-        ? projects.filter((project) => project.status === filter)
+        ? projects.filter((project) => toLowerCaseString(project.status) === toLowerCaseString(filter))
         : projects;
 
     // console.log(projects)
 
-    const handleProjectClick = (projectId) => {
-        navigate(`/project/${projectId}`);
-    };
+    // const handleProjectClick = (projectId) => {
+    //     navigate(`/project/${projectId}`);
+    // };
 
+    // if(projects.length === 0) {
+    //     return (
+    //         <div>
+    //             <NotfoundAnimation/>
+    //             <h1 className="mx-auto text-lg ">No Projects found!</h1>
+    //         </div>
+    //     )
+    // }
 
     return (
-        <div className={`absolute left-[300px] top-[64px] w-[80%] h-auto p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
+        <div className={`absolute left-[304px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             {isLoading ? (
                 <div className="skeleton-container">
                     {/* Loading skeleton */}
@@ -97,15 +107,20 @@ export default function AllProject() {
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-10 mt-10">
-                        {filteredProjects.map((project) => (
-                            <ProjectCard 
-                                key={project._id} 
-                                onClick={() => handleProjectClick(project._id)}
-                                project={project} 
-                            />
-                        ))}
-                    </div>
+                    {projects.length === 0 ? 
+                        <div>
+                            <NotfoundAnimation/>
+                            <h1 className="mx-auto text-lg ">No Projects found!</h1>
+                        </div> :
+                        <div className="flex flex-wrap gap-10 mt-10">
+                            {filteredProjects.map((project) => (
+                                <ProjectCard 
+                                    key={project._id} 
+                                    project={project} 
+                                />
+                            ))}
+                        </div>
+                    }
                 </BlurFade>
             )}
         </div>

@@ -21,6 +21,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Lottie from "lottie-react";
 import successAnimation from '../../assets/successAnimation.json'
+import { toast } from "react-toastify";
 
 
 
@@ -30,8 +31,9 @@ export default function CreateNewProject() {
     const isLoading = useSelector((state) => state.loading.isLoading);
     const dispatch = useDispatch();
     const navigate = useNavigate(); // To navigate after form submission
+    const user = JSON.parse(localStorage.getItem('user'));
 
-    const steps = ['Project Details', 'Tasks Details', 'Client Details', 'Settings'];
+    const steps = ['Project Details', 'Client Details', 'Settings'];
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
     const [projectDetails, setProjectDetails] = useState({});
@@ -96,11 +98,11 @@ export default function CreateNewProject() {
         switch (step) {
             case 0:
                 return <ProjectDetailForm onChange={handleProjectDetailsChange} />;
+            // case 1:
+            //     return <TaskDetailForm onChange={handleTaskDetailsChange} />;
             case 1:
-                return <TaskDetailForm onChange={handleTaskDetailsChange} />;
-            case 2:
                 return <ClientDetailForm onChange={handleClientDetailsChange} />;
-            case 3:
+            case 2:
                 return <SettingsForm onChange={handleProjectSettingsChange} />;
             default:
                 return 'Unknown step';
@@ -124,11 +126,25 @@ export default function CreateNewProject() {
         const projectData = {
             ...projectDetails,
         };
+
+        const notify = {
+            userId : user._id,
+            title : 'Project created successfully',
+            message : 'Project created'
+        }
         
         dispatch(startLoading());
         try {
             await api.post('/project/', projectData, { withCredentials: true }); // Change URL to your API endpoint
             dispatch(createProject(projectData));
+
+            try {
+                const notification = await api.post('/notification/', notify , {withCredentials: true});
+                // console.log(notification.data.data);
+                return notification.data.data;
+            } catch (error) {
+                // console.log(`Error: ${error}`);
+            }
             
             // Show success animation
             setShowSuccessAnimation(true);
@@ -138,7 +154,8 @@ export default function CreateNewProject() {
                 navigate('/dashboard');
             }, 2000); // Adjust time as needed
         } catch (error) {
-            console.error('Error creating project:', error);
+            // console.error('Error creating project:', error);
+            toast.error("Error creating project");
         } finally {
             dispatch(stopLoading());
         }
@@ -147,7 +164,7 @@ export default function CreateNewProject() {
 
     return (
         <>
-            <div className={`absolute left-[300px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
+            <div className={`absolute left-[305px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
                 <BlurFade>
                     <GradualSpacing className="text-left mb-14 text-2xl font-semibold" text="Create New Project"/>
                     

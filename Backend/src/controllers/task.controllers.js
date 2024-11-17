@@ -37,6 +37,7 @@ const createTask = asyncHandler(async (req, res) => {
     taskStatus: "pending",
     priority: priority || "medium",
     assignedTo: assignedTo || null,
+    owner: req.user._id,
   });
 
   if (!task) {
@@ -49,7 +50,7 @@ const createTask = asyncHandler(async (req, res) => {
 });
 
 const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await Task.find({ assignedTo: req.user._id });
+  const tasks = await Task.find({ $or:[{assignedTo: req.user._id}, {owner: req.user._id}] });
 
   if (tasks.length == 0) {
     throw new ApiError(404, "No Tasks found");

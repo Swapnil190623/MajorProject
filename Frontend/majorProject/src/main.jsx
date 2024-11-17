@@ -13,6 +13,11 @@ import Login from './pages/Login and Register/Login.jsx';
 import Register from './pages/Login and Register/Register.jsx';
 import LandingPage from './pages/Landing/LandingPage.jsx';
 import AllTask from './pages/Tasks/AllTask.jsx'
+import CreateNewTask from './pages/Tasks/CreateNewTask.jsx';
+import AllDocument from './pages/Documents/AllDocument.jsx';
+import Profile from './pages/Profile/Profile.jsx';
+import Calender from './pages/Calender/Calender.jsx';
+import VideoPage from './pages/Meeting/VideoPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -53,6 +58,26 @@ const router = createBrowserRouter([
       {
         path : "/task/all-tasks",
         element : <AllTask/>
+      },
+      {
+        path : "/task/:projectId/create-new-task",
+        element : <CreateNewTask/>
+      },
+      {
+        path : "/document/all-documents",
+        element : <AllDocument/>
+      },
+      {
+        path : "/profile",
+        element : <Profile/>
+      },
+      {
+        path : "/schedule",
+        element : <Calender/>
+      },
+      {
+        path : "/room/:id",
+        element : <VideoPage/>
       }
     ]
   }

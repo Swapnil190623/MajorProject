@@ -12,7 +12,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { NavLink } from "react-router-dom";
-import { fetchTasks } from "@/store/taskSlice";
+import { addTask, fetchTasks } from "@/store/taskSlice";
+import api from "@/api/api";
+import toLowerCaseString from "@/lib/toLowerCaseString";
+import NotfoundAnimation from "@/components/NotFoundAnimation";
 
 
 export default function AllTask() {
@@ -20,7 +23,8 @@ export default function AllTask() {
     const dispatch = useDispatch();
     const darkMode = useSelector((state) => state.theme.isDarkMode);
     const isLoading = useSelector((state) => state.loading.isLoading);
-    const tasks = useSelector((state) => state.tasks.tasks);
+    // const tasks = useSelector((state) => state.tasks.tasks);
+    const [tasks, setTasks] = useState([]);
     const [filter, setFilter] = useState('');
 
     const handleChange = (event) => {
@@ -29,16 +33,40 @@ export default function AllTask() {
 
     useEffect(() => {
         dispatch(startLoading());
-        dispatch(fetchTasks()).finally(() => dispatch(stopLoading())); // Fetch projects from backend
+        // dispatch(fetchTasks()).finally(() => dispatch(stopLoading())); // Fetch projects from backend
+        const fetchTasks = async() => {
+            try {
+                const response = await api.get('/task/', { withCredentials: true });
+                // console.log(response.data.data)
+                dispatch(addTask(response.data.data));
+                setTasks(response.data.data);
+                return response.data.data;
+            } catch (error) {
+                console.log(`Error : ${error}`)
+            }
+            finally {
+                dispatch(stopLoading());
+            }
+        }
+        fetchTasks()
     }, [dispatch]);
 
     const filteredTasks = filter
-        ? tasks.filter((task) => task.status === filter)
+        ? tasks.filter((task) => toLowerCaseString(task.taskStatus) === toLowerCaseString(filter))
         : tasks;
 
-
+    if(tasks.length === 0) {
+        return (
+            <div>
+                <NotfoundAnimation/>
+                <h1 className="mx-auto text-lg ">No Tasks found!</h1>
+            </div>
+        )
+    }
+    
+    
     return (
-        <div className={`absolute left-[300px] top-[64px] w-[80%] h-full p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
+        <div className={`absolute left-[300px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             {isLoading ? (
                 <div className="skeleton-container">
                     <Skeleton variant="text" width="60%" />
@@ -64,15 +92,15 @@ export default function AllTask() {
                                     </Select>
                                 </FormControl>
                             </Box>
-                            <NavLink to="/project/create-new-project">
-                                <ShimmerButton className="w-[120px] h-[40px] text-sm">Add Project</ShimmerButton>  
-                            </NavLink>
+                            {/* <NavLink to="/task/create-new-task">
+                                <ShimmerButton className="w-[120px] h-[40px] text-sm">Add Task</ShimmerButton>  
+                            </NavLink> */}
                         </div>
                     </div>
 
                     <div className="flex flex-wrap gap-10 mt-10">
                         {filteredTasks.map((task) => (
-                            <TaskCard key={task._id} project={task} />
+                            <TaskCard key={task._id} task={task} />
                         ))}
                     </div>
                 </BlurFade>

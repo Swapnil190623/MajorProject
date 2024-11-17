@@ -52,8 +52,8 @@ export const updateProject = createAsyncThunk(
     'projects/updateProject',
     async ({ projectId, updatedProject }) => {
         try {
-            const response = await axios.patch(`${process.env.REACT_APP_API_URL}/projects/${projectId}`, updatedProject);
-            return response.data;
+            const response = await api.patch(`/project/${updateProject._id}`, updatedProject);
+            return response.data.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to update project');
         }

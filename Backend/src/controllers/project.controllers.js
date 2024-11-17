@@ -26,9 +26,9 @@ const createProject = asyncHandler(async (req, res) => {
     }
 
      // Validate deadline date
-     if (!moment(deadline, moment.ISO_8601, true).isValid()) {
-        throw new ApiError(400, 'Invalid date format for deadline.');
-    }
+    //  if (!moment(deadline, moment.ISO_8601, true).isValid()) {
+    //     throw new ApiError(400, 'Invalid date format for deadline.');
+    // }
 
     // Check if the project name already exists
     const existingProject = await Project.findOne({ name });
