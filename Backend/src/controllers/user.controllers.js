@@ -6,6 +6,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
+
+
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -313,6 +315,21 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Avatar image updated successfully"));
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  const { search } = req.query; // Optional search query
+
+  const users = await User.find(
+      search
+          ? { email: { $regex: search, $options: 'i' } } // Modify `email` to `username` if needed
+          : {}
+  ).select('_id email username');
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, users, 'Users fetched successfully.'));
+});
+
+
 
 export {
   registerUser,
@@ -323,4 +340,5 @@ export {
   getCurrentUser,
   updateAccountDetails,
   updateUserAvatar,
+  getAllUsers,
 };

@@ -55,6 +55,19 @@ const getFilesByProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, files, "Files fetched successfully"));
 }); // done
 
+const getAllFiles = asyncHandler(async (req, res) => {
+
+  const files = await File.find({uploadedBy : req.user._id});
+
+  if (!files || files.length === 0) {
+    throw new ApiError(404, "No files found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, files, "Files fetched successfully"));
+})
+
 const getFileById = asyncHandler(async (req, res) => {
   const { fileId } = req.params;
 
@@ -97,4 +110,22 @@ const deleteFile = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "File deleted successfully"));
 }); // done
 
-export { uploadFile, getFileById, getFilesByProject, deleteFile };
+const deleteFilesByProjectId = asyncHandler(async (req, res) => {
+  const { projectId } = req.params;
+
+  const files = await File.find({ projectId });
+
+  for (const file of files) {
+    await File.findByIdAndDelete(file._id);
+  }
+
+  if(!files) {
+    throw new ApiError(404, "Files not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, tasks, "Files deleted successfully."));
+});
+
+export { uploadFile, getFileById, getAllFiles, getFilesByProject, deleteFile, deleteFilesByProjectId };
