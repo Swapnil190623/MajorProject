@@ -24,15 +24,13 @@ const projectSchema = new mongoose.Schema(
     assignedBy: {
       type: mongoose.Schema.Types.ObjectId, //id of the person who assigned the project
       ref: "User",
-      required: true,
+      // required: true,
     },//client
 
-    teamMembers: [
-      {
-        type: mongoose.Schema.Types.ObjectId, // IDs of team members
-        ref: "User",
-      },
-    ], // Array of Firebase uids for team members
+    teamMembers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
 
     projectType: {
       type: String,
@@ -74,10 +72,10 @@ const projectSchema = new mongoose.Schema(
 
 
 projectSchema.pre('save', async function(next) {
-  const assignerExists = await User.exists({ _id: this.assignedBy });
-  if (!assignerExists) {
-    throw new ApiError(400, 'Assigned user does not exist.');
-  }
+  // const assignerExists = await User.exists({ _id: this.assignedBy });
+  // if (!assignerExists) {
+  //   throw new ApiError(400, 'Assigned user does not exist.');
+  // }
 
   for (let memberId of this.teamMembers) {
     const memberExists = await User.exists({ _id: memberId });
@@ -87,9 +85,9 @@ projectSchema.pre('save', async function(next) {
   }
 
     // Ensure the deadline is in the future
-    if (new Date(this.deadline) <= new Date()) {
-      throw new ApiError(400, 'The deadline must be a future date.');
-  }
+  //   if (new Date(this.deadline) <= new Date()) {
+  //     throw new ApiError(400, 'The deadline must be a future date.');
+  // }
 
   next();
 });

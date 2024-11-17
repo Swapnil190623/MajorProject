@@ -7,6 +7,7 @@ import {
   updateTask,
   assignTask,
   deleteTask,
+  deleteTaskByProjectId,
   updateTaskStatus,
 } from "../controllers/task.controllers.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
@@ -25,6 +26,8 @@ router
   .get(getTaskById) // testing - Done
   .patch(updateTask) //testing-Done
   .delete(deleteTask); //testing-Done
+
+router.route("/delete-by-project-id/:projectId").delete(deleteTaskByProjectId);
 
 router.route("/update/assign-task/:taskId").patch(assignTask); // remaining
 

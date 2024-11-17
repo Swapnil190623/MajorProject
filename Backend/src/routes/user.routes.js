@@ -9,12 +9,15 @@ import {
   getCurrentUser,
   updateUserAvatar,
   updateAccountDetails,
+  getAllUsers,
 } from "../controllers/user.controllers.js";
 import { verifyJWT } from "../middlewares/auth.middlewares.js";
 
 import { upload } from "../middlewares/multer.middlewares.js";
 
 const router = Router();
+
+router.route('/').get(getAllUsers);
 
 // Route for email/password registration
 router.route("/register").post(

@@ -34,6 +34,11 @@ const taskSchema = new mongoose.Schema(
       // required: true,
       ref: "User",
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId, //id of the project owner
+      required: true,
+      ref: "User", // Referencing the User model
+    },
   },
   { timestamps: true }
 );
