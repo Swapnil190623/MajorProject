@@ -6,6 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { createTask } from "@/store/taskSlice";
 import { toast } from "react-toastify";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function CreateNewTask() {
@@ -92,8 +94,15 @@ export default function CreateNewTask() {
         }, 2000); 
     }
 
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
+
     return (
         <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
         <div className={`absolute left-[300px] top-[64px] w-[80%] h-fit flex flex-col md:flex-row justify-between p-5 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             {/* Left Side Form */}
             <div className={`w-[500px] p-5 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700 text-white' : 'bg-gray-100'}`}>

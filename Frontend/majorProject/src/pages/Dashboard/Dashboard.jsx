@@ -15,6 +15,8 @@ import LineChartCards from '@/components/Dashboard/LineChartCards';
 import { fetchCurrentUser } from '@/store/userSlice';
 import { NavLink } from 'react-router-dom';
 import api from '@/api/api';
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 
@@ -72,8 +74,15 @@ export default function Dashboard() {
     }, 2000);
   }, [dispatch, recentlyAccessedProject._id]);
 
+  const handleToggleDarkMode = () => {
+    dispatch(toggleDarkMode());
+  };
+
   return ( 
     <>
+      <SidePanel darkMode={darkMode} />
+      <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
       <div className={`absolute left-[300px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
         {isLoading ? (
           <div className="skeleton-container">

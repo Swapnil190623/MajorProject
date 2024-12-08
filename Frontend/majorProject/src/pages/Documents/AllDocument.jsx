@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import api from "@/api/api";
 import DocumentCard from "@/components/Documents/DocumentCard";
 import NotfoundAnimation from "@/components/NotFoundAnimation";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function AllDocument() {
@@ -34,8 +36,16 @@ export default function AllDocument() {
             </div>
         )
     }
+
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
      
     return (
+        <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
         <div className={`absolute left-[307px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             <div className="flex justify-between mt-8">
                 <GradualSpacing className="text-left text-3xl font-semibold" text="Documents" />
@@ -50,5 +60,6 @@ export default function AllDocument() {
                 ))}
             </div>
         </div>
+        </>
     )
 }

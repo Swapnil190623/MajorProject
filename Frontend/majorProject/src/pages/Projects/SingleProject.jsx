@@ -29,6 +29,8 @@ import { useNavigate } from "react-router-dom";
 import TaskMiniCard from "@/components/Tasks/TaskMiniCard";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function SingleProject() {
@@ -209,10 +211,12 @@ export default function SingleProject() {
 
         try {
             const response = await api.patch(`/project/${project._id}`, project, { withCredentials : true});
-            // console.log(response.data.data);
+            console.log(response.data.data);
+            localStorage.setItem('recentlyAccessedProject', response.data.data);
             // alert("Project updated successfully")
             toast.success("Project updated successfully!");
-            setProject(response.data.data)
+            setProject(response.data.data);
+
 
             // const assignTeamMembers = async () => {
 
@@ -303,8 +307,15 @@ export default function SingleProject() {
     // console.log(project.deadline);
     // console.log(formattedDeadline)
 
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
+
     return (
         <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
             <div className={`absolute left-[304px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
                 {isLoading ? (
                     <div className="skeleton-container">
