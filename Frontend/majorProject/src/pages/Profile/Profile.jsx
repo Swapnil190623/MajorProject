@@ -4,6 +4,8 @@ import GradualSpacing from "@/components/ui/gradual-spacing";
 import api from "@/api/api";
 import Avatar from '@mui/material/Avatar'
 import { toast } from "react-toastify";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function Profile() {
@@ -57,8 +59,16 @@ export default function Profile() {
         }
     };
 
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
+
 
     return (
+        <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
         <div className={`absolute left-[304px] top-[64px] w-[80%] h-full p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             <div className="flex items-start w-full text-left">
                 <GradualSpacing className="text-3xl font-semibold mt-10" text="Profile" />
@@ -189,5 +199,6 @@ export default function Profile() {
                 </button>
             </form>
         </div>
+        </>
     )
 }

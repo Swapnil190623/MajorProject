@@ -18,6 +18,7 @@ import AllDocument from './pages/Documents/AllDocument.jsx';
 import Profile from './pages/Profile/Profile.jsx';
 import Calender from './pages/Calender/Calender.jsx';
 import VideoPage from './pages/Meeting/VideoPage.jsx';
+import LinksPage from './pages/Links/LinksPage.jsx';
 
 
 const router = createBrowserRouter([
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path : "/room/:id",
         element : <VideoPage/>
+      },
+      {
+        path : "/links",
+        element : <LinksPage/>
       }
     ]
   }

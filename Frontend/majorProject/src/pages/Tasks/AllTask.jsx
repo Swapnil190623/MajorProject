@@ -16,6 +16,8 @@ import { addTask, fetchTasks } from "@/store/taskSlice";
 import api from "@/api/api";
 import toLowerCaseString from "@/lib/toLowerCaseString";
 import NotfoundAnimation from "@/components/NotFoundAnimation";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function AllTask() {
@@ -30,6 +32,10 @@ export default function AllTask() {
     const handleChange = (event) => {
         setFilter(event.target.value);
     };
+
+    const filteredTasks = filter
+        ? tasks.filter((task) => toLowerCaseString(task.taskStatus) === toLowerCaseString(filter))
+        : tasks;
 
     useEffect(() => {
         dispatch(startLoading());
@@ -51,9 +57,6 @@ export default function AllTask() {
         fetchTasks()
     }, [dispatch]);
 
-    const filteredTasks = filter
-        ? tasks.filter((task) => toLowerCaseString(task.taskStatus) === toLowerCaseString(filter))
-        : tasks;
 
     if(tasks.length === 0) {
         return (
@@ -63,9 +66,17 @@ export default function AllTask() {
             </div>
         )
     }
+
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
     
     
     return (
+    <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
         <div className={`absolute left-[300px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             {isLoading ? (
                 <div className="skeleton-container">
@@ -106,5 +117,6 @@ export default function AllTask() {
                 </BlurFade>
             )}
         </div>
+        </>
     );
 }

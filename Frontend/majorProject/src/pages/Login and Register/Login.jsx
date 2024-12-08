@@ -32,6 +32,7 @@ export default function Login() {
       // console.log('Login Successful:', user);
       dispatch(currentUser(user)); // not working
       localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('isAuthenticated', true)
       localStorage.setItem('token', response.data.data.accessToken); // Store token
       navigate("/dashboard");
     } catch (error) {

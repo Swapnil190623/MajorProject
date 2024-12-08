@@ -48,7 +48,7 @@ export default function VideoPage() {
   return (
     <div
       id="meeting-container"
-      style={{ position: "absolute", top:"30px", left:"100px", width: "100vw", height: "100vh" }}
+      style={{ width: "100vw", height: "100vh" }} //position: "absolute", top:"30px", left:"100px",
     >
     </div>
   );

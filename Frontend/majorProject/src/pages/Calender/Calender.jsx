@@ -5,6 +5,8 @@ import api from "@/api/api";
 import { toast } from "react-toastify";
 import ScheduleCard from "@/components/Schedules/ScheduleCard";
 import NotfoundAnimation from "@/components/NotFoundAnimation";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function Calender() {
@@ -82,7 +84,15 @@ export default function Calender() {
     //     )
     // }
 
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
+
     return (
+        <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
         <div className={`absolute left-[304px] top-[64px] w-[80%] h-full p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             <div className="flex justify-between items-center w-full mt-7 text-left">
                 <GradualSpacing className="text-3xl font-semibold" text="Schedule" />
@@ -196,5 +206,6 @@ export default function Calender() {
                 </div>
             }
         </div>
+        </>
     )
 }

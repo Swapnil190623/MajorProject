@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleDarkMode } from '@/store/themeSlice';
 // import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import NotificationCard from '../Notification/NotificationCard';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 
 export default function Header() {
@@ -65,16 +65,18 @@ export default function Header() {
       {/* Right Side: Notifications, Dark/Light mode, Profile */}
 
       <div className="flex items-center space-x-4">
-        {/* <SmsOutlinedIcon className="cursor-pointer text-gray-500 hover:text-gray-700" /> */}
+        {/* <NavLink to="">
+          <SmsOutlinedIcon className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        </NavLink> */}
         <VideocamOutlinedIcon onClick={toggleDropdown} className="cursor-pointer text-gray-500 hover:text-gray-700" />
         {isOpen && (
-          <div className="absolute right-24 top-10 mt-2 w-64 p-4 bg-white border border-gray-300 rounded-lg shadow-lg">
+          <div className={`absolute right-24 top-10 mt-2 w-64 p-4 border border-gray-300 rounded-lg shadow-lg ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
             <input 
               type="text" 
               value={inputValue} 
               onChange={handleInputChange} 
               placeholder="Enter Room ID"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+              className={`w-full px-3 py-2 border text border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 ${darkMode ? 'bg-gray-500 text-white' : 'bg-white'}`}
             />
             <button 
               onClick={submitHandler}

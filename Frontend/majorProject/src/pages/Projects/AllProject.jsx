@@ -17,6 +17,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import api from "@/api/api";
 import toLowerCaseString from "@/lib/toLowerCaseString";
 import NotfoundAnimation from "@/components/NotFoundAnimation";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 export default function AllProject() {
@@ -73,7 +75,15 @@ export default function AllProject() {
     //     )
     // }
 
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
+
     return (
+    <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
         <div className={`absolute left-[304px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
             {isLoading ? (
                 <div className="skeleton-container">
@@ -124,5 +134,6 @@ export default function AllProject() {
                 </BlurFade>
             )}
         </div>
+        </>
     );
 }

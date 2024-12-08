@@ -22,6 +22,8 @@ import Typography from '@mui/material/Typography';
 import Lottie from "lottie-react";
 import successAnimation from '../../assets/successAnimation.json'
 import { toast } from "react-toastify";
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
 
 
 
@@ -135,9 +137,10 @@ export default function CreateNewProject() {
         
         dispatch(startLoading());
         try {
-            await api.post('/project/', projectData, { withCredentials: true }); // Change URL to your API endpoint
+            const response = await api.post('/project/', projectData, { withCredentials: true }); // Change URL to your API endpoint
+            // console.log(response);
+            
             dispatch(createProject(projectData));
-
             try {
                 const notification = await api.post('/notification/', notify , {withCredentials: true});
                 // console.log(notification.data.data);
@@ -145,7 +148,7 @@ export default function CreateNewProject() {
             } catch (error) {
                 // console.log(`Error: ${error}`);
             }
-            
+            toast.success("Project created successfully")
             // Show success animation
             setShowSuccessAnimation(true);
 
@@ -160,10 +163,17 @@ export default function CreateNewProject() {
             dispatch(stopLoading());
         }
     };
-    
+
+    const handleToggleDarkMode = () => {
+        dispatch(toggleDarkMode());
+    };
+
 
     return (
         <>
+        <SidePanel darkMode={darkMode} />
+        <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
             <div className={`absolute left-[305px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
                 <BlurFade>
                     <GradualSpacing className="text-left mb-14 text-2xl font-semibold" text="Create New Project"/>

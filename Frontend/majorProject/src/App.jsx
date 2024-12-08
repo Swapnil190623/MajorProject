@@ -14,9 +14,10 @@ const App = () => {
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state) => state.theme.isDarkMode);
   // State to track authentication status
+  // const isAuthenticated = localStorage.getItem('isAuthenticated')
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
   // console.log(isAuthenticated);
-  
+
 
   const handleToggleDarkMode = () => {
     dispatch(toggleDarkMode());
@@ -34,12 +35,12 @@ const App = () => {
     <>
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
       {/* Show SidePanel and Header only if the user is logged in */}
-      {isAuthenticated && (
+      {/* {isAuthenticated && (
         <>
           <SidePanel darkMode={isDarkMode} />
           <Header darkMode={isDarkMode} toggleDarkMode={handleToggleDarkMode} />
         </>
-      )}
+      )} */}
       {/* Main Content */}
       <ToastContainer />
       <Outlet/>
