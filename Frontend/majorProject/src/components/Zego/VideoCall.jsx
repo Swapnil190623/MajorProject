@@ -46,3 +46,6 @@ const RoomPage = ()=>{
           );
        
 }
+
+
+export  default VideoCall
