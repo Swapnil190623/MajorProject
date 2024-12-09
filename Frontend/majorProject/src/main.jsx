@@ -76,10 +76,10 @@ const router = createBrowserRouter([
         path : "/schedule",
         element : <Calender/>
       },
-      {
-        path : "/room/:id",
-        element : <VideoPage/>
-      },
+      // {
+      //   path : "/room/:id",
+      //   element : <VideoPage/>
+      // },
       {
         path : "/links",
         element : <LinksPage/>
