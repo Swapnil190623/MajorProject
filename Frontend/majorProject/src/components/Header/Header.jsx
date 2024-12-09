@@ -41,15 +41,15 @@ export default function Header() {
     setInputValue(e.target.value);
   };
 
-  const submitHandler = () => {
-    if (inputValue.trim() === "") {
-      alert("Please enter a room ID.");
-      return;
-    }
-    alert("Meeting will start.");
-    setIsOpen(false);
-    navigate(`/room/${inputValue}`);
-  };
+  // const submitHandler = () => {
+  //   if (inputValue.trim() === "") {
+  //     alert("Please enter a room ID.");
+  //     return;
+  //   }
+  //   alert("Meeting will start.");
+  //   setIsOpen(false);
+  //   navigate(`/room/${inputValue}`);
+  // };
 
   
   return (
@@ -68,7 +68,7 @@ export default function Header() {
         {/* <NavLink to="">
           <SmsOutlinedIcon className="cursor-pointer text-gray-500 hover:text-gray-700" />
         </NavLink> */}
-        <VideocamOutlinedIcon onClick={toggleDropdown} className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        {/* <VideocamOutlinedIcon onClick={toggleDropdown} className="cursor-pointer text-gray-500 hover:text-gray-700" />
         {isOpen && (
           <div className={`absolute right-24 top-10 mt-2 w-64 p-4 border border-gray-300 rounded-lg shadow-lg ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
             <input 
@@ -85,7 +85,7 @@ export default function Header() {
               Join
             </button>
           </div>
-        )}
+        )} */}
 
         <div className="relative">
         <NotificationsOutlinedIcon onClick={toggleNotifications} className="cursor-pointer text-gray-500 hover:text-gray-700" />
