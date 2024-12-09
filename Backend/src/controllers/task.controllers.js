@@ -8,8 +8,10 @@ import { User } from "../models/user.models.js";
 
 const createTask = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const { name, description, dueDate, priority, assignedTo } = req.body;
+  const { name, description, status, dueDate, priority, assignedTo } = req.body;
 
+  // console.log(name, description, status, dueDate, priority, assignedTo);
+  
   if ([name, description].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "Name and description are required.");
   }
@@ -19,6 +21,14 @@ const createTask = asyncHandler(async (req, res) => {
 
   if (!project) {
     throw new ApiError(404, "Project not found.");
+  }
+
+  const updateProject = await Project.findByIdAndUpdate(projectId, {
+    $inc: { noOfTasks: 1 }
+  }, { new: true });
+
+  if (!updateProject) {
+    throw new ApiError(404, "Project not updated.");
   }
 
   // Validate assignedTo user exists
@@ -34,9 +44,10 @@ const createTask = asyncHandler(async (req, res) => {
     name,
     description,
     dueDate: dueDate ? new Date(dueDate) : null, // Ensure dueDate is a valid date
-    taskStatus: "pending",
+    taskStatus: status || "pending",
     priority: priority || "medium",
     assignedTo: assignedTo || null,
+    owner: req.user._id,
   });
 
   if (!task) {
@@ -49,7 +60,7 @@ const createTask = asyncHandler(async (req, res) => {
 });
 
 const getAllTasks = asyncHandler(async (req, res) => {
-  const tasks = await Task.find({ assignedTo: req.user._id });
+  const tasks = await Task.find({ $or:[{assignedTo: req.user._id}, {owner: req.user._id}] });
 
   if (tasks.length == 0) {
     throw new ApiError(404, "No Tasks found");
@@ -73,6 +84,7 @@ const getTasksByProject = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, tasks, "Tasks retrieved successfully."));
 }); // all tasks of the project.
+
 
 const getTaskById = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
@@ -167,12 +179,41 @@ const deleteTask = asyncHandler(async (req, res) => {
   }
 
   // Proceed to delete the task if the user is authorized
-  await Task.findByIdAndDelete(taskId);
+  const deletedTask = await Task.findByIdAndDelete(taskId);
 
+  const projectId = deletedTask.projectId;
+  const project = await Project.findByIdAndUpdate(projectId, {
+    $inc: { noOfTasks: -1 }
+  }, { new: true });
+
+  if (!project) {
+    throw new ApiError(404, "Project not updated.");
+  }
+
+  await task.save();
+  await project.save();
   return res
     .status(200)
     .json(new ApiResponse(200, task, "Task deleted successfully."));
 }); // delete a single task
+
+const deleteTaskByProjectId = asyncHandler(async (req, res) => {
+  const { projectId } = req.params;
+
+  const tasks = await Task.find({ projectId });
+
+  for (const task of tasks) {
+    await Task.findByIdAndDelete(task._id);
+  }
+
+  if(!tasks) {
+    throw new ApiError(404, "Task not found.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, tasks, "Tasks deleted successfully."));
+});
 
 const updateTaskStatus = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
@@ -205,5 +246,6 @@ export {
   updateTask,
   assignTask,
   deleteTask,
+  deleteTaskByProjectId,
   updateTaskStatus,
 };

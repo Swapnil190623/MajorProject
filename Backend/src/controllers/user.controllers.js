@@ -5,6 +5,9 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import axios from 'axios';
+
+
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
@@ -84,6 +87,32 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!createdUser) {
     throw new ApiError(500, "Something went wrong while registering the user");
+  }
+
+  // Add user to CometChat
+  const authKey = process.env.COMETCHAT_AUTH_KEY; // Replace with your CometChat Auth Key
+  const appId = `${process.env.COMETCHAT_APP_ID}`; // Replace with your CometChat App ID
+  const region = `${process.env.COMETCHAT_REGION}`; // Replace with your CometChat Region
+  const cometChatUrl = `https://${appId}.api-${region}.cometchat.io/v3/users`;
+
+  const cometChatUserData = {
+    uid: user._id.toString(), // Use user ID from your database as CometChat UID
+    name: fullName,
+    avatar: avatar.url, // Optional avatar URL
+  };
+
+  try {
+    await axios.post(cometChatUrl, cometChatUserData, {
+      headers: {
+        "Content-Type": "application/json",
+        appId: appId,
+        apiKey: authKey,
+      },
+    });
+    console.log("CometChat user created successfully:", cometChatUserData.uid);
+  } catch (error) {
+    console.error("Failed to create user in CometChat:", error.response?.data || error.message);
+    // Optional: You can handle this gracefully, e.g., send an error response or roll back the DB entry
   }
 
   return res
@@ -313,6 +342,21 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Avatar image updated successfully"));
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  const { search } = req.query; // Optional search query
+
+  const users = await User.find(
+      search
+          ? { email: { $regex: search, $options: 'i' } } // Modify `email` to `username` if needed
+          : {}
+  ).select('_id email username');
+
+  return res
+  .status(200)
+  .json(new ApiResponse(200, users, 'Users fetched successfully.'));
+});
+
+
 
 export {
   registerUser,
@@ -323,4 +367,5 @@ export {
   getCurrentUser,
   updateAccountDetails,
   updateUserAvatar,
+  getAllUsers,
 };

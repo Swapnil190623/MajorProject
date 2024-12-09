@@ -24,10 +24,10 @@ export const fetchTasks = createAsyncThunk(
 
 export const createTask = createAsyncThunk(
     'tasks/createTask',
-    async (newTask) => {
+    async (projectId, newTask) => {
         try {
-            const response = await axios.post(`/tasks/${newTask.projectId}`, newTask);
-            return response.data;
+            const response = await api.post(`/task/${projectId}`, newTask, {withCredentials: true});
+            return response.data.data;
         } catch (error) {
             throw new Error(error.response?.data || 'Failed to create task');
         }

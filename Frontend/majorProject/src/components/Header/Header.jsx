@@ -1,21 +1,54 @@
-import React from 'react';
+import {React, useState} from 'react';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import SmsOutlinedIcon from '@mui/icons-material/SmsOutlined';
+import VideocamOutlinedIcon from '@mui/icons-material/VideocamOutlined';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleDarkMode } from '@/store/themeSlice';
 // import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
+import NotificationCard from '../Notification/NotificationCard';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 
 export default function Header() {
 
   const darkMode = useSelector((state) => state.theme.isDarkMode); // Access state from Redux
   const dispatch = useDispatch();
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Meeting
+  const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const navigate = useNavigate();
+
 
   const handleToggleDarkMode = () => {
     dispatch(toggleDarkMode()); // Dispatch action to toggle dark mode
+  };
+
+  const toggleNotifications = () => {
+    setShowNotifications(!showNotifications);
+  };
+
+  // Meeting
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  const submitHandler = () => {
+    if (inputValue.trim() === "") {
+      alert("Please enter a room ID.");
+      return;
+    }
+    alert("Meeting will start.");
+    setIsOpen(false);
+    navigate(`/room/${inputValue}`);
   };
 
   
@@ -32,9 +65,40 @@ export default function Header() {
       {/* Right Side: Notifications, Dark/Light mode, Profile */}
 
       <div className="flex items-center space-x-4">
-        <SmsOutlinedIcon className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        {/* <NavLink to="">
+          <SmsOutlinedIcon className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        </NavLink> */}
+        <VideocamOutlinedIcon onClick={toggleDropdown} className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        {isOpen && (
+          <div className={`absolute right-24 top-10 mt-2 w-64 p-4 border border-gray-300 rounded-lg shadow-lg ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
+            <input 
+              type="text" 
+              value={inputValue} 
+              onChange={handleInputChange} 
+              placeholder="Enter Room ID"
+              className={`w-full px-3 py-2 border text border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 ${darkMode ? 'bg-gray-500 text-white' : 'bg-white'}`}
+            />
+            <button 
+              onClick={submitHandler}
+              className="w-full px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+            >
+              Join
+            </button>
+          </div>
+        )}
 
-        <NotificationsOutlinedIcon className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        <div className="relative">
+        <NotificationsOutlinedIcon onClick={toggleNotifications} className="cursor-pointer text-gray-500 hover:text-gray-700" />
+        {showNotifications && (
+            <div
+              className={`absolute right-0 mt-2 w-80 max-h-96 p-2 ${
+                darkMode ? "bg-gray-700 text-white" : "bg-white text-black"
+              } border-gray-200 rounded-lg shadow-lg overflow-y-auto`}
+            >
+              <NotificationCard />
+            </div>
+          )}
+        </div>
 
         <div onClick={handleToggleDarkMode} className="cursor-pointer">
           {darkMode ? (

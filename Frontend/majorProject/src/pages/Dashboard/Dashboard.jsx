@@ -14,6 +14,10 @@ import TeamMembersCards from '@/components/Dashboard/TeamMembersCards';
 import LineChartCards from '@/components/Dashboard/LineChartCards';
 import { fetchCurrentUser } from '@/store/userSlice';
 import { NavLink } from 'react-router-dom';
+import api from '@/api/api';
+import SidePanel from "@/components/SidePanel/SidePanel"
+import Header from '@/components/Header/Header';
+
 
 
 export default function Dashboard() {
@@ -22,23 +26,63 @@ export default function Dashboard() {
   const isLoading = useSelector((state) => state.loading.isLoading);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.currentUser);
+  const [fetchedFiles, setFetchedFiles] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  // const recentlyAccessedProject = useSelector((state) => state.projects.recentlyAccessedProject);
+
+
+  const recentlyAccessedProject = JSON.parse(localStorage.getItem('recentlyAccessedProject'));
 
   // console.log(user.fullName)
+  // console.log(recentlyAccessedProject);
+  
 
   useEffect(() => {
     // Start loading when component mounts
     dispatch(startLoading());
     // dispatch(fetchCurrentUser()).finally(() => dispatch(stopLoading()));
     
+    const fetchFilesByProject = async () => {
+        try {
+            const response = await api.get(`/file/get-file/${recentlyAccessedProject._id}`, { withCredentials : true});
+            // console.log(response.data.data);
+            setFetchedFiles(response.data.data);
+            return response.data.data; 
+        } catch (error) {
+            console.log(`Error : ${error}`)   
+        }
+    }
 
+    fetchFilesByProject();
+
+    const fetchTasksByProject = async () => {
+      try {
+          const response = await api.get(`/task/get-task/${recentlyAccessedProject._id}`, { withCredentials : true});
+          // console.log(response.data.data);
+          setTasks(response.data.data);
+          return response.data.data; 
+      } catch (error) {
+          console.log(`Error : ${error}`)   
+      }
+    }
+
+    fetchTasksByProject();
+   
     // Simulate API call or data fetching
     setTimeout(() => {
       dispatch(stopLoading()); // Stop loading when data is fetched
     }, 2000);
-  }, [dispatch]);
+  }, [dispatch, recentlyAccessedProject._id]);
+
+  const handleToggleDarkMode = () => {
+    dispatch(toggleDarkMode());
+  };
 
   return ( 
     <>
+      <SidePanel darkMode={darkMode} />
+      <Header darkMode={darkMode} toggleDarkMode={handleToggleDarkMode} />
+
       <div className={`absolute left-[300px] top-[64px] w-[80%] h-fit p-5 z-0 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-50'}`}>
         {isLoading ? (
           <div className="skeleton-container">
@@ -64,11 +108,11 @@ export default function Dashboard() {
 
             <div className="flex justify-evenly mt-20">
               {/* Documents */}
-              <Skeleton variant="rectangular" width={300} height={450}/>
+              <Skeleton variant="rectangular" width={350} height={450}/>
               {/* Daily Tasks */}
-              <Skeleton variant="rectangular" width={300} height={450}/>
+              <Skeleton variant="rectangular" width={350} height={450}/>
               {/* Team Members */}
-              <Skeleton variant="rectangular" width={300} height={450}/>
+              <Skeleton variant="rectangular" width={350} height={450}/>
             </div>
           </div>
         ) : (
@@ -81,13 +125,18 @@ export default function Dashboard() {
               </NavLink>
             </div>
 
+            <h1 className='text-left text-xl mt-12 font-medium text-violet-700'>{recentlyAccessedProject.name}</h1>
+
             {/* Accessed Cards */}
-            <div className="flex gap-5 mt-10">
-              <Marquee pauseOnHover className="[--duration:20s]">
-                <AccessedCards/>
-                <AccessedCards/>
-                <AccessedCards/>
-                <AccessedCards/>
+            
+            <div className="flex gap-5 mt-6">
+              <Marquee pauseOnHover className="[--duration:20s]"> 
+                {tasks.map((task) => (
+                  <AccessedCards
+                      key={task._id}
+                      task={task}
+                  />
+                ))}
               </Marquee>
             </div>
 
@@ -106,28 +155,34 @@ export default function Dashboard() {
             >
               <p className="text-left text-xl font-semibold mb-5">Documents</p>
 
-              <div className="flex flex-col items-center">
-                <DocumentCard/>
-                <DocumentCard/>
-                <DocumentCard/>
-                <DocumentCard/>
-              </div>
+              {fetchedFiles.length === 0 ? <h1>No documents</h1> : (
+                <div className="flex flex-col items-center">
+                  {fetchedFiles.map((file) => (
+                      <DocumentCard key={file._id} document={file}/>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Daily Tasks */}
 
-            <div className={`w-[30%] h-[450px] p-4 overflow-y-scroll rounded-xl ${darkMode ? 'bg-gray-700 hover:shadow-lg' : 'bg-white hover:shadow-md'}`} 
+            <div className={`w-[30%] h-[450px] mb-10 p-4 overflow-y-scroll rounded-xl ${darkMode ? 'bg-gray-700 hover:shadow-lg' : 'bg-white hover:shadow-md'}`} 
             style={{scrollbarWidth: 'none'}}
             >
               <p className="text-left text-xl font-semibold mb-5">Daily Tasks</p>
 
-              <div className="flex flex-col items-center gap-y-4">
-                <DailyTaskCards/>
-                <DailyTaskCards/>
-                <DailyTaskCards/>
-                <DailyTaskCards/>
-                <DailyTaskCards/>
-              </div>
+              {tasks.length === 0 ? <h1>No tasks</h1> : (
+                <div className="flex flex-wrap gap-y-3">
+                  {/* Loop and display TaskItem */}
+                  {tasks.map((task) => (
+                      <div key={task._id} className="w-full">
+                          <DailyTaskCards
+                              task={task}
+                          />
+                      </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Team Members */}
@@ -138,11 +193,9 @@ export default function Dashboard() {
               <p className="text-left text-xl font-semibold mb-5">Team Members</p>
 
               <div className="flex flex-col items-center">
-                <TeamMembersCards/>
-                <TeamMembersCards/>
-                <TeamMembersCards/>
-                <TeamMembersCards/>
-                <TeamMembersCards/>
+                {recentlyAccessedProject.teamMembers.map((member) => (
+                    <TeamMembersCards key={member._id} teamMember={member}/>
+                ))}
               </div>
             </div>
           </div>

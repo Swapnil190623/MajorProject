@@ -1,6 +1,6 @@
 import React from "react"
 import Lottie from "lottie-react"
-import successAnimation from "./../../assets/SuccessAnimation.json"
+import successAnimation from "./../../assets/successAnimation.json"
 
 
 export default function FinishProject() {

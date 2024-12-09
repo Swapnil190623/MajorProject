@@ -3,9 +3,7 @@ import axios from 'axios';
 const api = axios.create({
     baseURL: import.meta.env.VITE_BACKEND_URL,
     withCredentials: true,  // This allows cookies to be sent with requests 
-    // headers: {
-    //     'Content-Type': 'application/json',
-    // },
+    headers: {},
 });
 
 // Interceptor to include token with every request

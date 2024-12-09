@@ -2,10 +2,12 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.models.js";
 import { Project } from "../models/project.models.js"
+import { File } from "../models/file.models.js"
 import { Task } from "../models/task.models.js"
 import { Invoice } from "../models/invoice.models.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { mongoose } from "mongoose";
+import { Notification } from "../models/notification.models.js"
 
 
 const createProject = asyncHandler(async (req, res) => {
@@ -26,9 +28,9 @@ const createProject = asyncHandler(async (req, res) => {
     }
 
      // Validate deadline date
-     if (!moment(deadline, moment.ISO_8601, true).isValid()) {
-        throw new ApiError(400, 'Invalid date format for deadline.');
-    }
+    //  if (!moment(deadline, moment.ISO_8601, true).isValid()) {
+    //     throw new ApiError(400, 'Invalid date format for deadline.');
+    // }
 
     // Check if the project name already exists
     const existingProject = await Project.findOne({ name });
@@ -80,6 +82,8 @@ const getProjectById = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
 
     const project = await Project.findById(projectId)
+        .populate('teamMembers', 'username email avatar') // Populate only the required fields
+        .exec();
 
     if (!project) {
         throw new ApiError(404, 'Project not found');
@@ -127,6 +131,7 @@ const deleteProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
 
     const project = await Project.findByIdAndDelete(projectId);
+    // const file = await File.find({ projectId : projectId })
 
     if (!project) {
         throw new ApiError(404, 'Project not found');
@@ -140,7 +145,13 @@ const deleteProject = asyncHandler(async (req, res) => {
 
 const assignTeamMembers = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const { teamMembers } = req.body; // Array of team member IDs
+    const { teamMembers } = req.body; // Array of team member emails\
+
+    // console.log("Request Body:", req.body);
+
+    if (!teamMembers || !Array.isArray(teamMembers) || teamMembers.length === 0) {
+        throw new ApiError(400, "Invalid input: 'teamMembers' must be a non-empty array.");
+    }
 
     const project = await Project.findById(projectId);
 
@@ -148,17 +159,41 @@ const assignTeamMembers = asyncHandler(async (req, res) => {
         throw new ApiError(404, 'Project not found');
     }
 
-    // Ensure all team members are valid users
-    for (const memberId of teamMembers) {
-        const user = await User.findById(memberId);
-        if (!user) {
-            throw new ApiError(404, `User with ID ${memberId} not found`);
-        }
-    }
+    // Find users by email
+    const users = await User.find({ email: { $in: teamMembers } });
 
-    project.teamMembers.push(...teamMembers);
+     if (users.length !== teamMembers.length) {
+        // Handle missing users
+        const missingMembers = teamMembers.filter(
+            (member) => !users.some((user) => user.email === member)
+        );
+        throw new ApiError(404,`The following members were not found: ${missingMembers.join(', ')}`);
+    }
+ 
+    // Extract user IDs
+    const userIds = users.map((user) => user._id);
+    // console.log(userIds);
+ 
+    // Add unique IDs to the project's teamMembers array
+    project.teamMembers = [...new Set([...project.teamMembers, ...userIds])];
 
     await project.save();
+
+    // Notify the project owner
+    await Notification.create({
+        userId: project.owner,
+        title: "Member Added",
+        message: `Team members were added to your project "${project.name}".`
+    });
+
+    // Notify each team member
+    for (const userId of userIds) {
+        await Notification.create({
+            userId,
+            title: "You are added",
+            message: `You have been added to the project "${project.name}".`
+        });
+    }
 
     return res
     .status(200)
@@ -179,18 +214,32 @@ const updateProjectProgress = asyncHandler(async (req, res) => {
 
  //   const totalTasks = await Task.countDocuments({ projectId: project._id });
   const totalTasks = project.noOfTasks;
-  const completedTasks = await Task.countDocuments({ projectId : projectId, status: 'completed' });
+  const completedTasks = await Task.countDocuments({ projectId : projectId, taskStatus: 'completed' });
+  const pendingTasks = await Task.countDocuments({ projectId : projectId, taskStatus: 'pending' });
+  const inProgressTasks = await Task.countDocuments({ projectId : projectId, taskStatus: 'in-progress' });
 
-  const progress = (completedTasks / totalTasks) * 100; // (5 / 10) * 100 = 50%
+    //   console.log(totalTasks, completedTasks)
+
+  const progressInPercentage = Math.round((completedTasks / totalTasks) * 100); // (5 / 10) * 100 = 50%
+    //   console.log(progress)
       
-  project.progress = progress;
+    //   project.progress = progress;
 
-  if (progress === 100) {
+  if (progressInPercentage === 100) {
     project.status = 'completed';
   } 
-  else if (progress > 0) {
+  else if (progressInPercentage > 0) {
     project.status = 'in-progress';
   }
+
+  const progress = {
+    progressInPercentage,
+    completedTasks,
+    pendingTasks,
+    inProgressTasks
+  }
+
+    //   await project.save();
 
   return res
   .status(200)

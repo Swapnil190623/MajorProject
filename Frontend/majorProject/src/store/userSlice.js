@@ -6,12 +6,12 @@ import api from '@/api/api';
 const initialState = {
     isAuthenticated : false,
     currentUser: {
-        _id : '',
-        username : '',
-        email : '',
-        fullName : '',
-        role : '',
-        avatar : ''
+        // _id : '',
+        // username : '',
+        // email : '',
+        // fullName : '',
+        // role : '',
+        // avatar : ''
     },
     loading: false,
     error: null,
@@ -51,9 +51,9 @@ const userSlice = createSlice({
             state.isAuthenticated = true;
             state.currentUser = action.payload;
         },
-        logoutUser: (state) => {
+        logoutUser: (state, action) => {
             state.isAuthenticated = false;
-            state.currentUser = {};
+            state.currentUser = action.payload;
         },
     },
     extraReducers: (builder) => {
