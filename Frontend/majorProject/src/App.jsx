@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import './App.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleDarkMode } from './store/themeSlice';
@@ -6,7 +6,8 @@ import SidePanel from "./components/SidePanel/SidePanel"
 import Header from './components/Header/Header';
 import { useEffect } from 'react';
 import { currentUser } from './store/userSlice';
-
+import VideoCall from './components/Zego/VideoCall.jsx'
+import HomePage from './components/Zego/index.jsx';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,12 @@ const App = () => {
 
       {/* Main Content */}
       <Outlet/>
-    </div>
+      
+      //todays
+      <Routes>
+        <Route path='/' element={HomePage}></Route>
+      </Routes>
+    //</div>
   );
 };
 
